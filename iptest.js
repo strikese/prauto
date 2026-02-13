@@ -11,7 +11,7 @@ const IPS_CSV = "init.csv";
 const LOCATIONS_JSON = "locations.json";
 
 // 输出文件路径，保存每个国家前LIMIT_PER_COUNTRY个有效代理IP
-const OUTPUT_FILE = "ip_tq_limited.txt";
+const OUTPUT_FILE = "ip.txt";
 
 // 输出文件路径，保存所有有效代理IP（不限制数量）
 const OUTPUT_ALL = "proxyip.txt";
