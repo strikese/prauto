@@ -47,7 +47,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git checkout res
           # 添加文件到暂存区
-          git add proxyip.txt ip.txt
+          git add proxyip.txt ip.txt telegram_messages.json
           
           # 检查是否有变化
           if git diff --staged --quiet; then
