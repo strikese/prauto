@@ -4,7 +4,8 @@ on:
   schedule:
     - cron: "0 16 * * *"
   workflow_dispatch:
-
+permissions:
+  contents: write
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -19,6 +20,10 @@ jobs:
         with:
           node-version: 'node'
 
+      - name: Run iptest.js
+        run: |
+          npm install -g pnpm
+          pnpm i
       # 执行 iptest.js
       - name: Run iptest.js
         run: node iptest.js
@@ -27,19 +32,30 @@ jobs:
       - name: Push proxyip.txt to Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node telegram.js
+      - name: Commit and Push Changes
         run: |
-          # 获取当前的北京时间
-          BEIJING_TIME=$(TZ="Asia/Shanghai" date "+%Y-%m-%d %H:%M:%S")
-
-          # 设置消息说明并包含北京时间
-          MESSAGE="#proxyip #反代ip
-          检测完成
-          出站类型：ipv4
-          检测时间：$BEIJING_TIME"
-
-          # 使用 sendDocument 方法发送文件和说明文字
-          curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument" \
-            -F chat_id=$CHAT_ID \
-            -F document="@proxyip.txt" \
-            -F caption="$MESSAGE"
+          # 获取当前时间
+          CURRENT_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+          
+          # 配置 git
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 添加文件到暂存区
+          git add proxyip.txt ip.txt
+          
+          # 检查是否有变化
+          if git diff --staged --quiet; then
+            echo "No changes to commit at $CURRENT_TIME"
+          else
+            # 提交更改（包含时间戳）
+            git commit -m "Update proxyip.txt - $CURRENT_TIME [skip ci]"
+            
+            # 推送到仓库
+            git push
+            echo "Changes pushed successfully at $CURRENT_TIME"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
