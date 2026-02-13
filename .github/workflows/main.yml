@@ -1,0 +1,50 @@
+name: Execute iptest.js and Push File to Telegram
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 16 * * *"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 检出代码
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      # 安装 Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'node'
+
+      # 安装依赖
+      - name: Install dependencies
+        run: |
+          npm install pnpm -g
+          pnpm i
+
+      # 执行 iptest.js
+      - name: Run iptest.js
+        run: node iptest.js
+
+      # 上传 proxyip.txt 到 Telegram
+      - name: Push proxyip.txt to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # 获取当前的北京时间
+          BEIJING_TIME=$(TZ="Asia/Shanghai" date "+%Y-%m-%d %H:%M:%S")
+
+          # 设置消息说明并包含北京时间
+          MESSAGE="Proxyip 检测结果\n检测时间：$BEIJING_TIME"
+
+          # 使用 sendDocument 方法发送文件和说明文字
+          curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument" \
+            -F chat_id=$CHAT_ID \
+            -F document="@proxyip.txt" \
+            -F caption="$MESSAGE"
