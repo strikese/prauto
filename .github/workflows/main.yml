@@ -22,12 +22,6 @@ jobs:
         with:
           node-version: 'node'
 
-      # 安装依赖
-      - name: Install dependencies
-        run: |
-          npm install pnpm -g
-          pnpm i
-
       # 执行 iptest.js
       - name: Run iptest.js
         run: node iptest.js
