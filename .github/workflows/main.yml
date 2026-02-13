@@ -1,9 +1,6 @@
 name: Execute iptest.js and Push File to Telegram
 
 on:
-  push:
-    branches:
-      - main
   schedule:
     - cron: "0 16 * * *"
   workflow_dispatch:
