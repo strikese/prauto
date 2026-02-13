@@ -53,7 +53,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           
           # 确保我们在正确的分支上
-          git checkout res  # 请确保这个分支名和上面 checkout 的一致
+          # git checkout res  # 请确保这个分支名和上面 checkout 的一致
           
           # 添加文件到暂存区
           git add proxyip.txt 2>/dev/null || true
@@ -68,7 +68,7 @@ jobs:
             git commit -m "Update proxyip.txt and ip.txt - $CURRENT_TIME [skip ci]"
             
             # 推送到仓库的指定分支
-            git push origin res
+            git push # origin res
             echo "Changes pushed successfully to res at $CURRENT_TIME"
           fi
         env:
