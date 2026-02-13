@@ -1,0 +1,85 @@
+name: Execute iptest.js and Push File to Telegram
+
+on:
+  schedule:
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 检出代码
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # 安装 Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'  # 指定具体版本更好
+
+      # 安装依赖
+      - name: Install Dependencies
+        run: |
+          npm install -g pnpm
+          pnpm install
+
+      # 执行 iptest.js
+      - name: Execute iptest.js
+        run: node iptest.js
+
+      # 检查生成的文件是否存在
+      - name: Check generated files
+        run: |
+          if [ ! -f proxyip.txt ]; then
+            echo "Error: proxyip.txt not generated!"
+            exit 1
+          fi
+          echo "Files generated successfully"
+
+      # 上传 proxyip.txt 到 Telegram
+      - name: Push proxyip.txt to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -f telegram.js ]; then
+            node telegram.js
+          else
+            echo "Warning: telegram.js not found, skipping Telegram upload"
+          fi
+
+      # 提交并推送更改
+      - name: Commit and Push Changes
+        run: |
+          # 获取当前时间
+          CURRENT_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+          
+          # 配置 git
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 添加文件到暂存区（只添加存在的文件）
+          git add proxyip.txt 2>/dev/null || true
+          git add ip.txt 2>/dev/null || true
+          git add telegram_messages.json 2>/dev/null || true
+          
+          # 检查是否有变化
+          if git diff --staged --quiet; then
+            echo "No changes to commit at $CURRENT_TIME"
+          else
+            # 提交更改（包含时间戳）
+            git commit -m "Update proxy files - $CURRENT_TIME [skip ci]"
+            
+            # 推送到仓库
+            git push
+            echo "Changes pushed successfully at $CURRENT_TIME"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
