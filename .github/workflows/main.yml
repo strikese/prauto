@@ -13,6 +13,9 @@ jobs:
       # 检出代码
       - name: Checkout Repository
         uses: actions/checkout@v6
+        with:
+          ref: res  # 指定要使用的分支，请根据实际情况修改分支名
+          fetch-depth: 0
 
       # 安装 Node.js
       - name: Set up Node.js
@@ -42,7 +45,7 @@ jobs:
           # 配置 git
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          
+          git checkout res
           # 添加文件到暂存区
           git add proxyip.txt ip.txt
           
@@ -54,7 +57,7 @@ jobs:
             git commit -m "Update proxyip.txt - $CURRENT_TIME [skip ci]"
             
             # 推送到仓库
-            git push
+            git push origin res
             echo "Changes pushed successfully at $CURRENT_TIME"
           fi
         env:
