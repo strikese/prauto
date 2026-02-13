@@ -4,15 +4,6 @@ on:
   schedule:
     - cron: "0 16 * * *"
   workflow_dispatch:
-    inputs:
-      branch:
-        description: '选择要运行的分支'
-        required: true
-        default: 'res'
-        type: choice
-        options:
-          - res
-          - main
 
 permissions:
   contents: write
@@ -25,7 +16,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event_name == 'schedule' && 'res' || github.event.inputs.branch }}
+          ref: ${{ github.event_name == 'schedule' && 'res' || github.ref_name }}
           fetch-depth: 0
 
       # 安装 Node.js
