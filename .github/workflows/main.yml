@@ -41,7 +41,7 @@ jobs:
           BEIJING_TIME=$(TZ="Asia/Shanghai" date "+%Y-%m-%d %H:%M:%S")
 
           # 设置消息说明并包含北京时间
-          MESSAGE="Proxyip 检测结果\n检测时间：$BEIJING_TIME"
+          MESSAGE="Proxyip 检测结果\nProxyip 出站：ipv4\n检测时间：$BEIJING_TIME"
 
           # 使用 sendDocument 方法发送文件和说明文字
           curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument" \
