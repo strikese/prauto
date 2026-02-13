@@ -14,7 +14,7 @@ const LOCATIONS_JSON = "locations.json";
 const OUTPUT_FILE = "ip_tq_limited.txt";
 
 // 输出文件路径，保存所有有效代理IP（不限制数量）
-const OUTPUT_ALL = "ip_tq_unlimited.txt";
+const OUTPUT_ALL = "proxyip.txt";
 
 // 设置代理IP的类型，支持 'ipv4' 和 'ipv6'
 const OUTPUT_TYPE = "ipv4";
