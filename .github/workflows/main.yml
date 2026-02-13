@@ -56,7 +56,9 @@ jobs:
           git checkout res  # 请确保这个分支名和上面 checkout 的一致
           
           # 添加文件到暂存区
-          git add proxyip.txt ip.txt
+          git add proxyip.txt 2>/dev/null || true
+          git add ip.txt 2>/dev/null || true
+          git add telegram_messages.json 2>/dev/null || true
           
           # 检查是否有变化
           if git diff --staged --quiet; then
