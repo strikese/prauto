@@ -185,14 +185,32 @@ class TelegramBotSender {
     }
 
     // 保存消息ID到文件
-    saveMessageIds() {
-        try {
+saveMessageIds() {
+    try {
+        // 检查文件是否存在
+        if (fs.existsSync(this.storagePath)) {
+            // 文件存在，读取现有内容并合并
+            const existingData = fs.readFileSync(this.storagePath, 'utf8');
+            const existingIds = JSON.parse(existingData);
+            
+            // 合并现有ID和新ID（去重）
+            const mergedIds = [...new Set([...existingIds, ...this.messageIds])];
+            
+            // 写入合并后的数据
+            fs.writeFileSync(this.storagePath, JSON.stringify(mergedIds, null, 2));
+            console.log(`💾 消息ID已追加保存到: ${this.storagePath} (原有 ${existingIds.length} 条, 新增 ${this.messageIds.length} 条)`);
+            
+            // 更新内存中的messageIds为合并后的数据
+            this.messageIds = mergedIds;
+        } else {
+            // 文件不存在，直接写入
             fs.writeFileSync(this.storagePath, JSON.stringify(this.messageIds, null, 2));
-            console.log(`💾 消息ID已保存到: ${this.storagePath}`);
-        } catch (error) {
-            console.error(`❌ 保存消息ID失败: ${error.message}`);
+            console.log(`💾 消息ID已新建保存到: ${this.storagePath} (共 ${this.messageIds.length} 条)`);
         }
+    } catch (error) {
+        console.error(`❌ 保存消息ID失败: ${error.message}`);
     }
+}
 
     // 删除指定消息
     async deleteMessage(messageId) {
@@ -245,54 +263,57 @@ class TelegramBotSender {
         this.messageIds = [];
         this.saveMessageIds();
     }
+
     // 发送所有消息（文本 & 文件）
-    async sendMessages(messages) {
-        if (!messages || !Array.isArray(messages) || messages.length === 0) {
-            console.warn('⚠️ 没有消息需要发送');
-            return;
-        }
-
-        try {
-            // 1. 首先删除所有旧消息
-            await this.deleteOldMessages();
-
-            // 2. 发送新消息
-            let successful = 0;
-            let failed = 0;
-
-            for (const [index, item] of messages.entries()) {
-                let result;
-                try {
-                    if (item.type === 'text') {
-                        result = await this.sendTextMessage(item.message, item.buttons);
-                    } else if (item.type === 'file') {
-                        result = await this.sendFile(item.path, item.message, item.buttons);
-                    } else {
-                        throw new Error(`未知的消息类型: ${item.type}`);
-                    }
-
-                    // 保存新消息的ID
-                    if (result && result.result && result.result.message_id) {
-                        this.messageIds.push(result.result.message_id);
-                        successful++;
-                    }
-                } catch (error) {
-                    failed++;
-                    console.error(`❌ 消息 ${index + 1} 发送失败:`, error.message);
-                }
-            }
-
-            // 3. 保存新的消息ID
-            this.saveMessageIds();
-
-            // 统计发送结果
-            console.log(`\n📊 发送完成: ${successful} 成功, ${failed} 失败`);
-        } catch (error) {
-            console.error('❌ 发送消息过程中出错:', error);
-            throw error;
-        }
+async sendMessages(messages) {
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        console.warn('⚠️ 没有消息需要发送');
+        return;
     }
 
+    try {
+        // 1. 首先删除所有旧消息
+        //await this.deleteOldMessages();
+
+        // 2. 发送新消息
+        let successful = 0;
+        let failed = 0;
+        const newMessageIds = []; // 临时存储新消息ID
+
+        for (const [index, item] of messages.entries()) {
+            let result;
+            try {
+                if (item.type === 'text') {
+                    result = await this.sendTextMessage(item.message, item.buttons);
+                } else if (item.type === 'file') {
+                    result = await this.sendFile(item.path, item.message, item.buttons);
+                } else {
+                    throw new Error(`未知的消息类型: ${item.type}`);
+                }
+
+                // 保存新消息的ID到临时数组
+                if (result && result.result && result.result.message_id) {
+                    newMessageIds.push(result.result.message_id);
+                    successful++;
+                }
+                
+                // 每成功发送一条消息，就保存一次ID，防止中途失败导致数据丢失
+                this.messageIds = [...this.messageIds, ...newMessageIds];
+                this.saveMessageIds();
+                
+            } catch (error) {
+                failed++;
+                console.error(`❌ 消息 ${index + 1} 发送失败:`, error.message);
+            }
+        }
+
+        // 统计发送结果
+        console.log(`\n📊 发送完成: ${successful} 成功, ${failed} 失败`);
+    } catch (error) {
+        console.error('❌ 发送消息过程中出错:', error);
+        throw error;
+    }
+}
     // 发送纯文本消息
     async sendTextMessage(text, buttons = null) {
         if (!text || typeof text !== 'string') {
