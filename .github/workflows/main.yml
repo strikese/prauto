@@ -44,8 +44,8 @@ jobs:
       # 提交并推送到特定分支
       - name: Commit and Push Changes to Actions Branch
         run: |
-          # 获取当前时间
-          CURRENT_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+          # 获取当前时间（北京时间）
+          CURRENT_TIME=$(TZ="Asia/Shanghai" date '+%Y-%m-%d %H:%M:%S')
           
           # 配置 git
           git config --local user.name "github-actions[bot]"
