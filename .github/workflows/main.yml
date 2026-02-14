@@ -14,14 +14,13 @@ jobs:
     steps:
       # 检出代码 - 使用特定分支
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          ref: res  # 指定要使用的分支，请根据实际情况修改分支名
-          fetch-depth: 0
+          ref: res  # 指定要使用的分支，请根据实际情况修改分支
 
       # 安装 Node.js
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 'node'
 
@@ -51,10 +50,7 @@ jobs:
           # 配置 git
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # 确保我们在正确的分支上
-          # git checkout res  # 请确保这个分支名和上面 checkout 的一致
-          
+
           # 添加文件到暂存区
           git add proxyip.txt 2>/dev/null || true
           git add ip.txt 2>/dev/null || true
@@ -62,14 +58,14 @@ jobs:
           
           # 检查是否有变化
           if git diff --staged --quiet; then
-            echo "No changes to commit at $CURRENT_TIME on res"
+            echo "No changes to commit at $CURRENT_TIME"
           else
             # 提交更改（包含时间戳）
             git commit -m "Update proxyip.txt and ip.txt - $CURRENT_TIME [skip ci]"
             
             # 推送到仓库的指定分支
-            git push # origin res
-            echo "Changes pushed successfully to res at $CURRENT_TIME"
+            git push
+            echo "Changes pushed successfully at $CURRENT_TIME"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
