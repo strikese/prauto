@@ -273,7 +273,7 @@ async sendMessages(messages) {
 
     try {
         // 1. 首先删除所有旧消息
-        //await this.deleteOldMessages();
+        await this.deleteOldMessages();
 
         // 2. 发送新消息
         let successful = 0;
