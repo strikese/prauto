@@ -19,19 +19,19 @@ const msg1 = `
 ✳️ **[𝐕𝐋𝐄𝐒𝐒快速体验订阅地址](https://t.me/Marisa_kristi)**
 
 🚀 **快速订阅 edge（自适应）**：
-\`https://mar.bbc.xx.kg/?sub\`
+\`https://mar.mot.cloudns.biz/?sub\`
 
 🚀 **快速订阅 snippet（自适应）**：
-\`https://spsub.bbc.xx.kg/?sub\`
+\`https://spsub.mot.cloudns.biz/?sub\`
 
 🛡️ **𝐌𝐢𝐡𝐨𝐦𝐨** (Clash Meta)：  
-\`https://mar.bbc.xx.kg/?clash\`
+\`https://mar.mot.cloudns.biz/?clash\`
 
 📦 **𝐒𝐢𝐧𝐠𝐛𝐨𝐱**：  
-\`https://mar.bbc.xx.kg/?sb\`
+\`https://mar.mot.cloudns.biz/?sb\`
 
 🦉 **𝐋𝐨𝐨𝐧**：  
-\`https://mar.bbc.xx.kg/?loon\`
+\`https://mar.mot.cloudns.biz/?loon\`
 
 🌐 **订阅器**
 
@@ -51,13 +51,13 @@ SUB = \`sub.mot.cloudns.biz\`
 🧪 **edgetunnel 订阅器(beta版)**  
 ────────────────  
 
-SUB = \`sub.bbc.xx.kg\`
+SUB = \`subbeta.mot.cloudns.biz\`
 
 ────────────────  
 🧪 **snippet 订阅器**  
 ────────────────  
 
-SUB = \`sub.bbc.xx.kg\`
+SUB = \`spsub.mot.cloudns.biz\`
   `;
 
 const msg2 = `
